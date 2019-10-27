@@ -52,6 +52,7 @@ def write_json(values, path):
 class Settings(object):
     config_path = resources.config_home('settings')
     bookmarks = property(lambda self: mklist(self.values['bookmarks']))
+    explored = property(lambda self: mklist(self.values['explored']))
     gui_state = property(lambda self: mkdict(self.values['gui_state']))
     recent = property(lambda self: mklist(self.values['recent']))
     copy_formats = property(lambda self: mklist(self.values['copy_formats']))
@@ -60,6 +61,7 @@ class Settings(object):
         """Load existing settings if they exist"""
         self.values = {
             'bookmarks': [],
+            'explored': [],
             'gui_state': {},
             'recent': [],
             'copy_formats': [],
@@ -87,6 +89,13 @@ class Settings(object):
         for recent in missing_recent:
             try:
                 self.recent.remove(recent)
+            except ValueError:
+                pass
+
+        for explored in [ b for b in self.explored
+                         if not self.verify(b['path']) ]:
+            try:
+                self.explored.remove(explored)
             except ValueError:
                 pass
 

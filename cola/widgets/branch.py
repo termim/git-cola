@@ -60,7 +60,7 @@ class BranchesWidget(QtWidgets.QFrame):
         self.model = model = context.model
 
         tooltip = N_('Toggle the branches filter')
-        icon = icons.ellipsis()
+        icon = icons.filter()
         self.filter_button = qtutils.create_action_button(
             tooltip=tooltip, icon=icon)
 

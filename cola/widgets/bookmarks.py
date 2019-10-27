@@ -24,6 +24,7 @@ from ..widgets import standard
 
 BOOKMARKS = 0
 RECENT_REPOS = 1
+EXPLORE_REPOS = 2
 
 
 def bookmark(context, parent):
@@ -32,6 +33,10 @@ def bookmark(context, parent):
 
 def recent(context, parent):
     return BookmarksWidget(context, RECENT_REPOS, parent=parent)
+
+
+def explore(context, parent):
+    return BookmarksWidget(context, EXPLORE_REPOS, parent=parent)
 
 
 class BookmarksWidget(QtWidgets.QFrame):
@@ -47,6 +52,9 @@ class BookmarksWidget(QtWidgets.QFrame):
         self.add_button = qtutils.create_action_button(
             tooltip=N_('Add'), icon=icons.add())
 
+        self.refresh_button = qtutils.create_action_button(
+            tooltip=N_('Refresh'), icon=icons.sync())
+
         self.delete_button = qtutils.create_action_button(
             tooltip=N_('Delete'), icon=icons.remove())
 
@@ -59,13 +67,17 @@ class BookmarksWidget(QtWidgets.QFrame):
         self.setFocusProxy(self.tree)
         if style == BOOKMARKS:
             self.setToolTip(N_('Favorite repositories'))
+            self.refresh_button.hide()
         elif style == RECENT_REPOS:
             self.setToolTip(N_('Recent repositories'))
             self.add_button.hide()
+            self.refresh_button.hide()
+        elif style == EXPLORE_REPOS:
+            self.setToolTip(N_('Explore repositories'))
 
         self.button_layout = qtutils.hbox(defs.no_margin, defs.spacing,
                                           self.open_button, self.add_button,
-                                          self.delete_button)
+                                          self.refresh_button, self.delete_button)
 
         self.main_layout = qtutils.vbox(defs.no_margin, defs.spacing, self.tree)
         self.setLayout(self.main_layout)
@@ -189,6 +201,9 @@ class BookmarksTreeWidget(standard.TreeWidget):
         elif self.style == RECENT_REPOS:
             settings.reload_recent()
             entries = settings.recent
+        # explore items
+        elif self.style == EXPLORE_REPOS:
+            entries = settings.explored
 
         items = [builder.get(entry['path'], entry['name']) for entry in entries]
         if self.style == BOOKMARKS and prefs.sort_bookmarks(context):

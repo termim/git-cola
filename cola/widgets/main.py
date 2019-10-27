@@ -114,6 +114,13 @@ class MainView(standard.MainWindow):
         qtutils.hide_dock(self.recentdock)
         bookmarkswidget.connect_to(recentwidget)
 
+        self.exploredock = create_dock(
+            N_('Explore1'), self,
+            fn=lambda dock: bookmarks.explore(context, dock))
+        explorewidget = self.exploredock.widget()
+        qtutils.hide_dock(self.exploredock)
+        bookmarkswidget.connect_to(explorewidget)
+
         # "Branch" widgets
         self.branchdock = create_dock(
             N_('Branches'), self, fn=partial(branch.BranchesWidget, context))
@@ -465,7 +472,7 @@ class MainView(standard.MainWindow):
 
         copy_widgets = (
             self, editor.summary, editor.description, self.diffeditor,
-            bookmarkswidget.tree, recentwidget.tree,
+            bookmarkswidget.tree, recentwidget.tree, explorewidget.tree,
         )
         edit_proxy.override('copy', copy_widgets)
         edit_proxy.override('selectAll', copy_widgets)
@@ -585,10 +592,12 @@ class MainView(standard.MainWindow):
         self.addDockWidget(top, self.submodulesdock)
         self.addDockWidget(top, self.bookmarksdock)
         self.addDockWidget(top, self.recentdock)
+        self.addDockWidget(top, self.exploredock)
 
         self.tabifyDockWidget(self.branchdock, self.submodulesdock)
         self.tabifyDockWidget(self.submodulesdock, self.bookmarksdock)
         self.tabifyDockWidget(self.bookmarksdock, self.recentdock)
+        self.tabifyDockWidget(self.recentdock, self.exploredock)
         self.branchdock.raise_()
 
         self.addDockWidget(bottom, self.diffdock)
@@ -701,7 +710,8 @@ class MainView(standard.MainWindow):
             self.bookmarksdock,
             self.recentdock,
             self.branchdock,
-            self.submodulesdock
+            self.submodulesdock,
+            self.exploredock,
         ]
         if self.browser_dockable:
             dockwidgets.append(self.browserdock)
@@ -926,7 +936,8 @@ class MainView(standard.MainWindow):
             (optkey + '+5', self.bookmarksdock),
             (optkey + '+6', self.recentdock),
             (optkey + '+7', self.branchdock),
-            (optkey + '+8', self.submodulesdock)
+            (optkey + '+8', self.submodulesdock),
+            (optkey + '+9', self.exploredock)
         )
         for shortcut, dockwidget in dockwidgets:
             # Associate the action with the shortcut

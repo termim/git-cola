@@ -234,6 +234,10 @@ def file_zip():
     return icon('file-zip.svg')
 
 
+def filter():
+    return icon('filter.svg')
+
+
 def fold():
     return icon('fold.svg')
 
